@@ -11,5 +11,7 @@ namespace Polonicus_API.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime PublicationDate { get; set; }
+        public int OutpostId { get; set; }
+
     }
 }

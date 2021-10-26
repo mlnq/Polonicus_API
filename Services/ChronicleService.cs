@@ -84,7 +84,7 @@ namespace Polonicus_API.Services
             var outpost = dbContext
                                        .Outposts
                                        .Include(d => d.Chronicles)
-                                       .FirstOrDefault(o => o.Id == outpostId);//
+                                       .FirstOrDefault(o => o.Id == outpostId);
 
             if (outpost is null) throw new NotFoundException("outpost not found");
 
