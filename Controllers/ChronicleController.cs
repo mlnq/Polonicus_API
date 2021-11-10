@@ -24,7 +24,7 @@ namespace Polonicus_API.Controllers
         {
             var newChronicleId = chronicleService.Create(outpostId,dto);
 
-            return Created($"/api/{outpostId}/chronicle/{newChronicleId}", null);
+            return Created($"/api/{outpostId}/chronicle/{newChronicleId}", new { id = newChronicleId });
         }
 
         [HttpGet]

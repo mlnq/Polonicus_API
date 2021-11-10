@@ -25,7 +25,7 @@ namespace Polonicus_API.Controllers
         {
             var id = outpostService.Create(dto);
 
-            return Created($"/api/restaurant/{id}", null);
+            return Created($"/api/restaurant/{id}", new { id=id});
         }
 
         [HttpGet]
