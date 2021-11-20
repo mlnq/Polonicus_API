@@ -24,5 +24,9 @@ namespace Polonicus_API.Entities
         public virtual Address Address { get; set; }
 
         public virtual List<Chronicle> Chronicles { get; set; }
+
+        public int UserId { get; set; }
+        public virtual User User { get; set; }
+
     }
 }

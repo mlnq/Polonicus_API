@@ -103,10 +103,15 @@ namespace Polonicus_API.Migrations
                     b.Property<int>("Population")
                         .HasColumnType("int");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AddressId")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Outposts");
                 });
@@ -182,7 +187,15 @@ namespace Polonicus_API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Polonicus_API.Entities.User", "User")
+                        .WithMany("Outposts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Address");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Polonicus_API.Entities.User", b =>
@@ -204,6 +217,11 @@ namespace Polonicus_API.Migrations
             modelBuilder.Entity("Polonicus_API.Entities.Outpost", b =>
                 {
                     b.Navigation("Chronicles");
+                });
+
+            modelBuilder.Entity("Polonicus_API.Entities.User", b =>
+                {
+                    b.Navigation("Outposts");
                 });
 #pragma warning restore 612, 618
         }

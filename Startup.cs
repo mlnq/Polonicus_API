@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -34,6 +35,7 @@ namespace Polonicus_API
 
             var authenticationSettings = new AuthenticationSettings();
             //zbindowanie Jsona configa z instacj¹ obiektu authentication settings
+
             Configuration.GetSection("JwtAuthentication").Bind(authenticationSettings);
             //rejestruje jako singleton instancje obiektu do autentykacji
             services.AddSingleton(authenticationSettings);
@@ -48,7 +50,6 @@ namespace Polonicus_API
             {
                 cfg.RequireHttpsMetadata = false;
                 cfg.SaveToken = true;
-
                 cfg.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidIssuer = authenticationSettings.JwtIssuer,
@@ -57,6 +58,16 @@ namespace Polonicus_API
                 };
 
             });
+            /*  var key = new SymmetricSecurityKey
+              services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                  .AddJwtBearer(opt=>
+                  {
+                      opt.TokenValidationParameters = new TokenValidationParameters
+                      {
+                          ValidateIssuerSigningKey = true,
+                          IssuerSigningKey=
+                      }
+                  })*/
 
             //Polityka CORS
             services.AddCors(
@@ -122,7 +133,7 @@ namespace Polonicus_API
 
             app.UseRouting();
 
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

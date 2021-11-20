@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Polonicus_API.Entities;
@@ -17,21 +19,40 @@ namespace Polonicus_API.Services
     public interface IAccountService
     {
         void RegisterUserDto(RegisterUserDto dto);
-        public string GetToken(LoginDto dto);
+        public UserDto LoginUser(LoginDto dto);
+        public UserDto GetLoggedInUser(ClaimsPrincipal principal);
+
     }
     public class AccountService : IAccountService
     {
         private readonly PolonicusDbContext dbContext;
         private readonly IPasswordHasher<User> passwordHasher;
         private readonly AuthenticationSettings authentication;
+        private readonly IMapper mapper;
 
-        public AccountService(PolonicusDbContext _dbContext, IPasswordHasher<User> _passwordHasher, AuthenticationSettings _authentication)
+
+        public AccountService(PolonicusDbContext _dbContext, IPasswordHasher<User> _passwordHasher, AuthenticationSettings _authentication, IMapper _mapper)
         {
             dbContext = _dbContext;
             passwordHasher = _passwordHasher;
             authentication = _authentication;
+            mapper = _mapper;
+
         }
 
+        public UserDto GetLoggedInUser(ClaimsPrincipal principal)
+        {
+
+            string userId =  principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            int id = int.Parse(userId);
+
+            var user = dbContext.Users
+                         .FirstOrDefault(u => u.Id == id);
+
+            var userDto = mapper.Map<UserDto>(user);
+
+            return userDto;
+        }
 
         public void RegisterUserDto(RegisterUserDto dto)
         {
@@ -40,9 +61,9 @@ namespace Polonicus_API.Services
                 Email = dto.Email,
                 DateOfBirth = dto.DateOfBirth,
                 Nationality = dto.Nationality,
-                RoleId = dto.RoleId,
-                FirstName=dto.FirstName,
-                LastName=dto.LastName,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                RoleId = 1
             };
             var hashedPassword = passwordHasher.HashPassword(newUser, dto.Password);
             newUser.PasswordHash = hashedPassword;
@@ -51,7 +72,7 @@ namespace Polonicus_API.Services
             dbContext.SaveChanges();
         }
 
-        public string GetToken(LoginDto dto)
+        public UserDto LoginUser(LoginDto dto)
         {
             var user = dbContext
                 .Users
@@ -74,6 +95,7 @@ namespace Polonicus_API.Services
                 new Claim(ClaimTypes.Role,user.Role.Name),
             };
 
+            //klucz priv
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authentication.JwtKey));
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -88,7 +110,56 @@ namespace Polonicus_API.Services
                 );
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            return tokenHandler.WriteToken(token);
+
+            UserDto loggedUser = mapper.Map<UserDto>(user);
+            loggedUser.Token = tokenHandler.WriteToken(token);
+
+            dbContext.SaveChanges();
+
+            return loggedUser;
         }
+      /*  public LoginDto GetToken(LoginDto dto)
+        {
+            var user = dbContext
+                .Users
+                .Include(u => u.Role)
+                .FirstOrDefault(u => u.Email == dto.Email);
+
+            if (user is null) throw new BadRequestException("Invalid password or email adress");
+
+            var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+
+            if (result == PasswordVerificationResult.Failed)
+            {
+                throw new BadRequestException("Invalid password or email adress");
+            }
+
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
+                new Claim(ClaimTypes.Name,$"{user.FirstName}, {user.LastName}"),
+                new Claim(ClaimTypes.Role,user.Role.Name),
+            };
+
+            //klucz priv
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authentication.JwtKey));
+
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expiration = DateTime.Now.AddDays(authentication.JwtExpirationDays);
+
+            var token = new JwtSecurityToken(
+                authentication.JwtIssuer,
+                authentication.JwtIssuer,
+                claims,
+                expires: expiration,
+                signingCredentials: credentials
+                );
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            return tokenHandler.WriteToken(token);
+        }*/
+
+
     }
 }

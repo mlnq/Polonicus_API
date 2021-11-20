@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Polonicus_API.Entities;
 using Polonicus_API.Models;
 using Polonicus_API.Services;
@@ -11,6 +12,8 @@ namespace Polonicus_API.Controllers
 {
     [Route("api/outpost")]
     [ApiController]
+
+    //[Authorize]
     public class OutpostController : ControllerBase
     {
         private readonly IOutpostService outpostService;
@@ -19,19 +22,29 @@ namespace Polonicus_API.Controllers
         {
             outpostService = _outpostService;
         }
-
+        [Authorize]
         [HttpPost]
         public ActionResult Post([FromBody] CreateOutpostDto dto)
         {
             var id = outpostService.Create(dto);
 
-            return Created($"/api/restaurant/{id}", new { id=id});
+            return Created($"/api/restaurant/{id}", new { id = id });
         }
 
-        [HttpGet]
+        [Route("api/outpost/all")]
+        [AllowAnonymous]
         public ActionResult<IEnumerable<OutpostDto>> GetAll()
         {
             var outposts = outpostService.GetAll();
+
+            return Ok(outposts);
+        }
+
+        [HttpGet]
+        public ActionResult<IEnumerable<OutpostDto>> GetAllUserOutpost()
+        {
+            var outposts = outpostService.GetAllUserOutpost(HttpContext.User);
+            
 
             return Ok(outposts);
         }

@@ -10,8 +10,8 @@ using Polonicus_API.Entities;
 namespace Polonicus_API.Migrations
 {
     [DbContext(typeof(PolonicusDbContext))]
-    [Migration("20210916084850_database_Update")]
-    partial class database_Update
+    [Migration("20211119103103_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -105,12 +105,69 @@ namespace Polonicus_API.Migrations
                     b.Property<int>("Population")
                         .HasColumnType("int");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AddressId")
                         .IsUnique();
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Outposts");
+                });
+
+            modelBuilder.Entity("Polonicus_API.Entities.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("Polonicus_API.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nationality")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Polonicus_API.Entities.Chronicle", b =>
@@ -127,22 +184,46 @@ namespace Polonicus_API.Migrations
             modelBuilder.Entity("Polonicus_API.Entities.Outpost", b =>
                 {
                     b.HasOne("Polonicus_API.Entities.Address", "Address")
-                        .WithOne("Institution")
+                        .WithOne("Outpost")
                         .HasForeignKey("Polonicus_API.Entities.Outpost", "AddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Polonicus_API.Entities.User", "User")
+                        .WithMany("Outposts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Address");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Polonicus_API.Entities.User", b =>
+                {
+                    b.HasOne("Polonicus_API.Entities.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("Polonicus_API.Entities.Address", b =>
                 {
-                    b.Navigation("Institution");
+                    b.Navigation("Outpost");
                 });
 
             modelBuilder.Entity("Polonicus_API.Entities.Outpost", b =>
                 {
                     b.Navigation("Chronicles");
+                });
+
+            modelBuilder.Entity("Polonicus_API.Entities.User", b =>
+                {
+                    b.Navigation("Outposts");
                 });
 #pragma warning restore 612, 618
         }

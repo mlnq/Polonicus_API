@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Polonicus_API.Controllers
 {
-    [Route("api/outpost/{outpostId}/chronicle")]
+    
     [ApiController]
     public class ChronicleController : ControllerBase
     {
@@ -18,7 +18,7 @@ namespace Polonicus_API.Controllers
         {
             chronicleService = _chronicleService;
         }
-
+        [Route("api/outpost/{outpostId}/chronicle")]
         [HttpPost]
         public ActionResult Post([FromRoute] int outpostId,[FromBody] CreateChronicleDto dto)
         {
@@ -26,24 +26,33 @@ namespace Polonicus_API.Controllers
 
             return Created($"/api/{outpostId}/chronicle/{newChronicleId}", new { id = newChronicleId });
         }
-
+        [Route("api/outpost/{outpostId}/chronicle")]
         [HttpGet]
         public ActionResult Get([FromRoute] int outpostId)
         {
-            var chronicles = chronicleService.GetAll(outpostId);
+            var chronicles = chronicleService.GetAllFromOutpost(outpostId);
 
             return Ok(chronicles);
         }
+        //@TODO
+        [Route("api/chronicles")]
+        [HttpGet]
+        public ActionResult GetAll()
+        {
+            var chronicles = chronicleService.GetAll();
 
-        [HttpGet("{chronicleId}")]
+            return Ok(chronicles);
+        }
+        [Route("api/outpost/{outpostId}/chronicle/{chronicleId}")]
+        [HttpGet]
         public ActionResult Get([FromRoute] int outpostId, [FromRoute] int chronicleId)
         {
             var chronicle = chronicleService.GetById(outpostId,chronicleId);
 
             return Ok(chronicle);
         }
-
-        [HttpDelete("{chronicleId}")]
+        [Route("api/outpost/{outpostId}/chronicle/{chronicleId}")]
+        [HttpDelete]
         public ActionResult Delete([FromRoute] int outpostId, [FromRoute] int chronicleId)
         {
             chronicleService.Remove(outpostId,chronicleId);
@@ -53,7 +62,8 @@ namespace Polonicus_API.Controllers
 
 
         /// @TODO
-        [HttpPut("{chronicleId}")]
+        [Route("api/outpost/{outpostId}/chronicle/{chronicleId}")]
+        [HttpPut]
         public ActionResult Put([FromRoute] int outpostId, [FromRoute] int chronicleId,[FromBody] ChronicleDto dto)
         {
             chronicleService.Update(outpostId, chronicleId,dto);

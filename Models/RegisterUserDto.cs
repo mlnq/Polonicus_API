@@ -17,7 +17,5 @@ namespace Polonicus_API.Models
         public DateTime? DateOfBirth { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-
-        public int RoleId { get; set; } = 1;
     }
 }

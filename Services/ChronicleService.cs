@@ -13,7 +13,8 @@ namespace Polonicus_API.Services
     public interface IChronicleService
     {
         int Create(int outpostId, CreateChronicleDto dto);
-        List<ChronicleDto> GetAll(int outpostId);
+        List<ChronicleDto> GetAllFromOutpost(int outpostId);
+        List<ChronicleDto> GetAll();
         void Remove(int outpostId, int chronicleId);
         ChronicleDto GetById(int outpostId, int chronicleId);
         void Update(int outpostId, int chronicleId, ChronicleDto dto);
@@ -78,8 +79,18 @@ namespace Polonicus_API.Services
             return chronicleDto;
         }
 
+        public List<ChronicleDto> GetAll()
+        {
+            var chronicles = dbContext.Chronicles;
 
-        public List<ChronicleDto> GetAll(int outpostId)
+            if (chronicles is null) throw new NotFoundException("outpost not found");
+
+            var chroniclesDtos = mapper.Map<List<ChronicleDto>>(chronicles);
+
+            return chroniclesDtos;
+        }
+
+        public List<ChronicleDto> GetAllFromOutpost(int outpostId)
         {
             var outpost = dbContext
                                        .Outposts

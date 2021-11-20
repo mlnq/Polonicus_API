@@ -14,5 +14,6 @@ namespace Polonicus_API.Entities
 
         public int OutpostId { get; set; }
         public virtual Outpost Outpost { get; set; }
+
     }
 }

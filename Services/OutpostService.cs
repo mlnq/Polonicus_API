@@ -7,6 +7,7 @@ using Polonicus_API.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Polonicus_API.Services
@@ -18,7 +19,7 @@ namespace Polonicus_API.Services
         public int Create(CreateOutpostDto dto);
         public void Delete(int id);
         public void Update(int id, OutpostDto dto);
-
+        public List<OutpostDto> GetAllUserOutpost(ClaimsPrincipal principal);
 
     }
 
@@ -73,6 +74,25 @@ namespace Polonicus_API.Services
 
             dbContext.Outposts.Remove(outpost);
             dbContext.SaveChanges();
+        }
+
+             public List<OutpostDto> GetAllUserOutpost(ClaimsPrincipal principal)
+        {
+            string userIdClaim = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            int userId = int.Parse(userIdClaim);
+
+            var outposts = dbContext
+                .Outposts
+                .Include(o => o.Address)
+                .Include(o => o.Chronicles)
+                .Include(o => o.User)
+                .Where(u=>u.UserId ==userId)
+                .ToList();
+
+
+            var outpostDto = mapper.Map<List<OutpostDto>>(outposts);
+
+            return outpostDto;
         }
 
         public List<OutpostDto> GetAll()

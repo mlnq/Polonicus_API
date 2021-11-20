@@ -30,6 +30,9 @@ namespace Polonicus_API
                 );
 
             CreateMap<OutpostDto, Outpost>();
+
+            CreateMap<User, UserDto>();
+                
         }
     }
 }

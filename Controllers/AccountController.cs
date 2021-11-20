@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Polonicus_API.Models;
 using Polonicus_API.Services;
 using System;
@@ -11,6 +12,7 @@ namespace Polonicus_API.Controllers
 
     [Route("/api/account")]
     [ApiController]
+    [AllowAnonymous]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService accountService;
@@ -30,8 +32,18 @@ namespace Polonicus_API.Controllers
         [HttpPost("login")]
         public ActionResult Login([FromBody] LoginDto dto)
         {
-            string token = accountService.GetToken(dto);
-            return Ok(token);
+            UserDto loggedUser = accountService.LoginUser(dto);
+           //string token = accountService.GetToken(dto);
+           // return Ok(token);
+            return Ok(loggedUser);
+
+        }
+
+        [HttpGet]
+        public ActionResult GetLoggedInUser()
+        {
+            UserDto loggedUser = accountService.GetLoggedInUser(HttpContext.User);
+            return Ok(loggedUser);
         }
     }
 }

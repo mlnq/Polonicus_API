@@ -15,8 +15,11 @@ namespace Polonicus_API.Entities
         public string Nationality { get; set; }
         public string PasswordHash { get; set; }
 
-        public int RoleId { get; set; } 
+        public int RoleId { get; set; } = 1;
         public virtual Role Role { get; set; }
+
+        public virtual List<Outpost> Outposts { get; set; }
+
     }
 }
 

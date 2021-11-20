@@ -15,5 +15,7 @@ namespace Polonicus_API.Entities
         public string Coord_longtiude { get; set; }
 
         public virtual Outpost Outpost { get; set; }
+
     }
+
 }
