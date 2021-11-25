@@ -31,7 +31,6 @@ namespace Polonicus_API.Services
             mapper = _mapper;
         }
 
-        //@todo Wykminic czy to dobre rozwiązanie
         public int Create(int outpostId, CreateChronicleDto dto)
         {
 

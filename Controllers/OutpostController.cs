@@ -26,13 +26,24 @@ namespace Polonicus_API.Controllers
         [HttpPost]
         public ActionResult Post([FromBody] CreateOutpostDto dto)
         {
-            var id = outpostService.Create(dto);
+            var id = outpostService.Create(dto, HttpContext.User);
 
             return Created($"/api/restaurant/{id}", new { id = id });
         }
 
-        [Route("api/outpost/all")]
+     /*   
+        [Authorize]
+        [HttpPost]
+        public ActionResult Post([FromBody] CreateOutpostDto dto)
+        {
+            var id = outpostService.Create(dto);
+
+            return Created($"/api/restaurant/{id}", new { id = id });
+        }*/
+
+        [Route("all")]
         [AllowAnonymous]
+        [HttpGet]
         public ActionResult<IEnumerable<OutpostDto>> GetAll()
         {
             var outposts = outpostService.GetAll();
@@ -45,7 +56,6 @@ namespace Polonicus_API.Controllers
         {
             var outposts = outpostService.GetAllUserOutpost(HttpContext.User);
             
-
             return Ok(outposts);
         }
 

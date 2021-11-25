@@ -22,10 +22,12 @@ namespace Polonicus_API.Controllers
         [HttpPost]
         public ActionResult Post([FromRoute] int outpostId,[FromBody] CreateChronicleDto dto)
         {
+            
             var newChronicleId = chronicleService.Create(outpostId,dto);
 
             return Created($"/api/{outpostId}/chronicle/{newChronicleId}", new { id = newChronicleId });
         }
+
         [Route("api/outpost/{outpostId}/chronicle")]
         [HttpGet]
         public ActionResult Get([FromRoute] int outpostId)
@@ -34,6 +36,7 @@ namespace Polonicus_API.Controllers
 
             return Ok(chronicles);
         }
+
         //@TODO
         [Route("api/chronicles")]
         [HttpGet]
@@ -43,6 +46,7 @@ namespace Polonicus_API.Controllers
 
             return Ok(chronicles);
         }
+
         [Route("api/outpost/{outpostId}/chronicle/{chronicleId}")]
         [HttpGet]
         public ActionResult Get([FromRoute] int outpostId, [FromRoute] int chronicleId)
@@ -51,6 +55,7 @@ namespace Polonicus_API.Controllers
 
             return Ok(chronicle);
         }
+
         [Route("api/outpost/{outpostId}/chronicle/{chronicleId}")]
         [HttpDelete]
         public ActionResult Delete([FromRoute] int outpostId, [FromRoute] int chronicleId)

@@ -25,6 +25,10 @@ namespace Polonicus_API.Models
         [MaxLength(50)]
         public string Street { get; set; }
         public string PostalCode { get; set; }
+        public string Coord_latitude { get; set; }
+        public string Coord_longtiude { get; set; }
+
+
         public int UserId { get; set; }
     }
 }

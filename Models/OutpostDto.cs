@@ -16,6 +16,8 @@ namespace Polonicus_API.Models
         public string City { get; set; }
         public string Street { get; set; }
         public string PostalCode { get; set; }
+        public string Coord_latitude { get; set; }
+        public string Coord_longtiude { get; set; }
 
         public List<ChronicleDto> Chronicles{ get; set; }
 

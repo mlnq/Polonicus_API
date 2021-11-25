@@ -16,7 +16,7 @@ namespace Polonicus_API.Services
     {
         public List<OutpostDto> GetAll();
         public OutpostDto GetById(int id);
-        public int Create(CreateOutpostDto dto);
+        public int Create(CreateOutpostDto dto, ClaimsPrincipal principal);
         public void Delete(int id);
         public void Update(int id, OutpostDto dto);
         public List<OutpostDto> GetAllUserOutpost(ClaimsPrincipal principal);
@@ -54,9 +54,13 @@ namespace Polonicus_API.Services
             return outpostDto;
         }
 
-        public int Create(CreateOutpostDto dto)
+        public int Create(CreateOutpostDto dto, ClaimsPrincipal principal)
         {
+            string userIdClaim = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            int userId = int.Parse(userIdClaim);
+
             var outpost = mapper.Map<Outpost>(dto);
+            outpost.UserId = userId;
 
             dbContext.Outposts.Add(outpost);
             dbContext.SaveChanges();
