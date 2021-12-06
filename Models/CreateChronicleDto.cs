@@ -11,7 +11,9 @@ namespace Polonicus_API.Models
 
         [Required]
         public string Name { get; set; }
+
         public string Description { get; set; }
+
         public string PublicationDate { get; set; }
 
         public int OutpostId { get; set; }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Polonicus_API.Entities;
 
 namespace Polonicus_API.Migrations
 {
     [DbContext(typeof(PolonicusDbContext))]
-    partial class PolonicusDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211125130521_outpost Country cred")]
+    partial class outpostCountrycred
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

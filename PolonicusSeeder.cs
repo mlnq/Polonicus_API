@@ -78,6 +78,17 @@ namespace Polonicus_API
                      Nationality="Polish",
                      PasswordHash="AQAAAAEAACcQAAAAEDDVgY/aqYUKXEi7N3bV3baVuaX39MJwVxIps3BeK1Gw6HJx9khk8zccH4Pp6eBlmA=="
                 },
+                //21.11.2021 00:00:00
+                new User()
+                {
+                     Email="admin@admin.com",
+                     FirstName="Admin",
+                     LastName="Admin",
+                     DateOfBirth=new DateTime(1972,05,12),
+                     Nationality="Polish",
+                     PasswordHash="AQAAAAEAACcQAAAAEGmbzohHbgTpAjm+46T9LZmqcqZkVJtz3kous/WZZaHya3eWBnKQ7H36DpjQYo+oZQ=="
+                     ,RoleId=2
+                },
             };
 
             return users;
@@ -91,7 +102,7 @@ namespace Polonicus_API
                 new Outpost()
                 {
                     UserId= user.Id,
-                    Name="PlacowkaKresy",
+                    Name="Przykładowa Placówka nr.1",
                     Description="Placówka integrująca polaków na terenach kresowych",
                     Population=1300,
                     Category="Historia Lokalna",
@@ -122,7 +133,7 @@ namespace Polonicus_API
                 new Outpost()
                 {
                     UserId= user.Id,
-                    Name="Grodno Wsparcie",
+                    Name="Przykładowa Placówka nr.2",
                     Description="Placówka integrująca polaków na terenach kresowych",
                     Population=2700,
                     Category="Historia Lokalna",
@@ -153,10 +164,7 @@ namespace Polonicus_API
                         PostalCode="70-012"
                     }
                 }
-
-
             };
-
             return outposts;
         }
     }

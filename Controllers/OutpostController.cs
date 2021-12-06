@@ -28,18 +28,8 @@ namespace Polonicus_API.Controllers
         {
             var id = outpostService.Create(dto, HttpContext.User);
 
-            return Created($"/api/restaurant/{id}", new { id = id });
+            return Created($"/api/outpost/{id}", new { id = id });
         }
-
-     /*   
-        [Authorize]
-        [HttpPost]
-        public ActionResult Post([FromBody] CreateOutpostDto dto)
-        {
-            var id = outpostService.Create(dto);
-
-            return Created($"/api/restaurant/{id}", new { id = id });
-        }*/
 
         [Route("all")]
         [AllowAnonymous]

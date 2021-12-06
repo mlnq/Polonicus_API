@@ -33,8 +33,8 @@ namespace Polonicus_API.Controllers
         public ActionResult Login([FromBody] LoginDto dto)
         {
             UserDto loggedUser = accountService.LoginUser(dto);
-           //string token = accountService.GetToken(dto);
-           // return Ok(token);
+            //string token = accountService.GetToken(dto);
+            // return Ok(token);
             return Ok(loggedUser);
 
         }
@@ -44,6 +44,28 @@ namespace Polonicus_API.Controllers
         {
             UserDto loggedUser = accountService.GetLoggedInUser(HttpContext.User);
             return Ok(loggedUser);
+        }
+
+        [HttpGet("getAll")]
+        public ActionResult GetAllUsers()
+        {
+            var userDtos = accountService.GetAllUsers();
+
+            return Ok(userDtos);
+
+        }
+        [HttpPut("upgrade")]
+        public ActionResult UpgradeUser([FromBody] UserDto userDto)
+        {
+            accountService.UpgradeUser(userDto.Email);
+            return Ok();
+        }
+
+        [HttpPut("downgrade")]
+        public ActionResult DowngradeUser([FromBody] UserDto userDto)
+        {
+            accountService.DowngradeUser(userDto.Email);
+            return Ok();
         }
     }
 }

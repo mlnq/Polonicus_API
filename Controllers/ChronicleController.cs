@@ -18,6 +18,7 @@ namespace Polonicus_API.Controllers
         {
             chronicleService = _chronicleService;
         }
+
         [Route("api/outpost/{outpostId}/chronicle")]
         [HttpPost]
         public ActionResult Post([FromRoute] int outpostId,[FromBody] CreateChronicleDto dto)

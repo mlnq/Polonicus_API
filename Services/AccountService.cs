@@ -21,7 +21,9 @@ namespace Polonicus_API.Services
         void RegisterUserDto(RegisterUserDto dto);
         public UserDto LoginUser(LoginDto dto);
         public UserDto GetLoggedInUser(ClaimsPrincipal principal);
-
+        public List<UserDto> GetAllUsers();
+        public void UpgradeUser(string emailAdress);
+        public void DowngradeUser(string emailAdress);
     }
     public class AccountService : IAccountService
     {
@@ -40,6 +42,15 @@ namespace Polonicus_API.Services
 
         }
 
+        public List<UserDto> GetAllUsers()
+        {
+            var users = dbContext.Users;
+
+            var userDtos = mapper.Map<List<UserDto>>(users); 
+
+            return userDtos;
+        }
+
         public UserDto GetLoggedInUser(ClaimsPrincipal principal)
         {
 
@@ -56,6 +67,11 @@ namespace Polonicus_API.Services
 
         public void RegisterUserDto(RegisterUserDto dto)
         {
+
+            var exisitingEmail = dbContext.Users.Any(u => u.Email == dto.Email);
+
+            if (exisitingEmail) throw new BadRequestException($"Podany email {dto.Email} już istnieje");
+
             var newUser = new User()
             {
                 Email = dto.Email,
@@ -65,6 +81,7 @@ namespace Polonicus_API.Services
                 LastName = dto.LastName,
                 RoleId = 1
             };
+
             var hashedPassword = passwordHasher.HashPassword(newUser, dto.Password);
             newUser.PasswordHash = hashedPassword;
 
@@ -81,6 +98,7 @@ namespace Polonicus_API.Services
 
             if (user is null) throw new BadRequestException("Invalid password or email adress");
 
+
             var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
 
             if(result == PasswordVerificationResult.Failed)
@@ -96,10 +114,11 @@ namespace Polonicus_API.Services
             };
 
             //klucz priv
+            var expiration = DateTime.Now.AddDays(authentication.JwtExpirationDays);
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authentication.JwtKey));
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiration = DateTime.Now.AddDays(authentication.JwtExpirationDays);
 
             var token = new JwtSecurityToken(
                 authentication.JwtIssuer,
@@ -118,47 +137,63 @@ namespace Polonicus_API.Services
 
             return loggedUser;
         }
-      /*  public LoginDto GetToken(LoginDto dto)
+
+        public void UpgradeUser(string emailAdress)
         {
-            var user = dbContext
-                .Users
-                .Include(u => u.Role)
-                .FirstOrDefault(u => u.Email == dto.Email);
+            var user =dbContext.Users
+                .FirstOrDefault(u => u.Email == emailAdress);
+            user.RoleId = 2;
+            dbContext.SaveChanges();
+        }
 
-            if (user is null) throw new BadRequestException("Invalid password or email adress");
+        public void DowngradeUser(string emailAdress)
+        {
+            var user = dbContext.Users
+                .FirstOrDefault(u => u.Email == emailAdress);
+            user.RoleId = 1;
+            dbContext.SaveChanges();
+        }
+        /*  public LoginDto GetToken(LoginDto dto)
+          {
+              var user = dbContext
+                  .Users
+                  .Include(u => u.Role)
+                  .FirstOrDefault(u => u.Email == dto.Email);
 
-            var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+              if (user is null) throw new BadRequestException("Invalid password or email adress");
 
-            if (result == PasswordVerificationResult.Failed)
-            {
-                throw new BadRequestException("Invalid password or email adress");
-            }
+              var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
 
-            var claims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
-                new Claim(ClaimTypes.Name,$"{user.FirstName}, {user.LastName}"),
-                new Claim(ClaimTypes.Role,user.Role.Name),
-            };
+              if (result == PasswordVerificationResult.Failed)
+              {
+                  throw new BadRequestException("Invalid password or email adress");
+              }
 
-            //klucz priv
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authentication.JwtKey));
+              var claims = new List<Claim>()
+              {
+                  new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
+                  new Claim(ClaimTypes.Name,$"{user.FirstName}, {user.LastName}"),
+                  new Claim(ClaimTypes.Role,user.Role.Name),
+              };
 
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiration = DateTime.Now.AddDays(authentication.JwtExpirationDays);
+              //klucz priv
+              var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authentication.JwtKey));
 
-            var token = new JwtSecurityToken(
-                authentication.JwtIssuer,
-                authentication.JwtIssuer,
-                claims,
-                expires: expiration,
-                signingCredentials: credentials
-                );
+              var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+              var expiration = DateTime.Now.AddDays(authentication.JwtExpirationDays);
 
-            var tokenHandler = new JwtSecurityTokenHandler();
+              var token = new JwtSecurityToken(
+                  authentication.JwtIssuer,
+                  authentication.JwtIssuer,
+                  claims,
+                  expires: expiration,
+                  signingCredentials: credentials
+                  );
 
-            return tokenHandler.WriteToken(token);
-        }*/
+              var tokenHandler = new JwtSecurityTokenHandler();
+
+              return tokenHandler.WriteToken(token);
+          }*/
 
 
     }

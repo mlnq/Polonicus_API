@@ -23,17 +23,15 @@ namespace Polonicus_API.Middleware
             {
                 await next.Invoke(context);
             }
-            catch (ForbidException forbidException)
-            {
-                context.Response.StatusCode = 403;
-            }
-
             catch (BadRequestException badRequestException)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(badRequestException.Message);
             }
-
+            catch (ForbidException forbidException)
+            {
+                context.Response.StatusCode = 403;
+            }
             catch (NotFoundException notFoundException)
             {
                 context.Response.StatusCode = 404;
@@ -43,10 +41,8 @@ namespace Polonicus_API.Middleware
             catch (Exception e)
             {
                 logger.LogError(e, e.Message);
-
                 //error status
                 context.Response.StatusCode = 500; 
-
                 await context.Response.WriteAsync("Something went wrong");
             }
         }
