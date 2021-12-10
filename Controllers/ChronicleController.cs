@@ -47,6 +47,16 @@ namespace Polonicus_API.Controllers
 
             return Ok(chronicles);
         }
+        //@TODO
+        [Route("api/chronicles/last")]
+        [HttpGet]
+        public ActionResult GetLastDate()
+        {
+            var chronicle = chronicleService.GetLastDate();
+
+            return Ok(chronicle);
+        }
+
 
         [Route("api/outpost/{outpostId}/chronicle/{chronicleId}")]
         [HttpGet]

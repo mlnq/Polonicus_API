@@ -18,6 +18,8 @@ namespace Polonicus_API.Services
         void Remove(int outpostId, int chronicleId);
         ChronicleDto GetById(int outpostId, int chronicleId);
         void Update(int outpostId, int chronicleId, ChronicleDto dto);
+        public ChronicleDto GetLastDate();
+
     }
 
     public class ChronicleService : IChronicleService
@@ -87,6 +89,18 @@ namespace Polonicus_API.Services
             var chroniclesDtos = mapper.Map<List<ChronicleDto>>(chronicles);
 
             return chroniclesDtos;
+        }
+
+
+        public ChronicleDto GetLastDate()
+        {
+            var chronicle = dbContext.Chronicles.OrderBy(c=>c.PublicationDate).First();
+
+            if (chronicle is null) throw new NotFoundException("outpost not found");
+
+            var chronicleDto = mapper.Map<ChronicleDto>(chronicle);
+
+            return chronicleDto;
         }
 
         public List<ChronicleDto> GetAllFromOutpost(int outpostId)
